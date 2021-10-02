@@ -115,6 +115,20 @@ services:
       - ${MEDIA_PATH}:/data
     ports:
       - ${LIDARR_WEB_PORT}:8686
+
+  prowlarr:
+    image: ghcr.io/linuxserver/prowlarr:${PROWLARR_VERSION}
+    container_name: prowlarr
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    volumes:
+      - ${PROWLARR_CONFIG_PATH}:/config
+    ports:
+      - ${PROWLARR_WEB_PORT}:9696
+    
     
 
 networks:
