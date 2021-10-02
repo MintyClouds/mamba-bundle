@@ -119,11 +119,12 @@ services:
   prowlarr:
     image: ghcr.io/linuxserver/prowlarr:${PROWLARR_VERSION}
     container_name: prowlarr
+    hostname: ${HOSTNAME}
     restart: unless-stopped
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/London
+      - TZ=Europe/Moscow
     volumes:
       - ${PROWLARR_CONFIG_PATH}:/config
     ports:
