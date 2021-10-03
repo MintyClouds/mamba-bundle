@@ -101,6 +101,20 @@ services:
     ports:
       - ${NGINX_WEB_PORT}:80
 
+  prowlarr:
+    image: ghcr.io/linuxserver/prowlarr:${PROWLARR_VERSION}
+    container_name: prowlarr
+    hostname: ${HOSTNAME}
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Moscow
+    volumes:
+      - ${PROWLARR_CONFIG_PATH}:/config
+    ports:
+      - ${PROWLARR_WEB_PORT}:9696
+
   lidarr:
     image: ghcr.io/linuxserver/lidarr:${LIDARR_VERSION}
     container_name: lidarr
@@ -115,10 +129,10 @@ services:
       - ${MEDIA_PATH}:/data
     ports:
       - ${LIDARR_WEB_PORT}:8686
-
-  prowlarr:
-    image: ghcr.io/linuxserver/prowlarr:${PROWLARR_VERSION}
-    container_name: prowlarr
+    
+  radarr:
+    image: ghcr.io/linuxserver/radarr:${RADARR_VERSION}
+    container_name: radarr
     hostname: ${HOSTNAME}
     restart: unless-stopped
     environment:
@@ -126,10 +140,25 @@ services:
       - PGID=1000
       - TZ=Europe/Moscow
     volumes:
-      - ${PROWLARR_CONFIG_PATH}:/config
+      - ${RADARR_CONFIG_PATH}:/config
+      - ${MEDIA_PATH}:/data
     ports:
-      - ${PROWLARR_WEB_PORT}:9696
+      - ${RADARR_WEB_PORT}:7878
     
+  sonarr:
+    image: ghcr.io/linuxserver/sonarr:${SONARR_VERSION}
+    container_name: sonarr
+    hostname: ${HOSTNAME}
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Moscow
+    volumes:
+      - ${RADARR_CONFIG_PATH}:/config
+      - ${MEDIA_PATH}:/data
+    ports:
+      - ${SONARR_WEB_PORT}:8989
     
 
 networks:
