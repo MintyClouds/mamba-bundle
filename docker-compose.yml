@@ -155,7 +155,7 @@ services:
       - PGID=1000
       - TZ=Europe/Moscow
     volumes:
-      - ${RADARR_CONFIG_PATH}:/config
+      - ${SONARR_CONFIG_PATH}:/config
       - ${MEDIA_PATH}:/data
     ports:
       - ${SONARR_WEB_PORT}:8989
