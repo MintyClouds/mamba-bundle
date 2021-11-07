@@ -1,28 +1,28 @@
 version: "3.7"
 services:
-  # Portainer 
-  agent:
-    image: portainer/agent:${PORTAINER_AGENT_VERSION}
-    # hostname: ${HOSTNAME}
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /var/lib/docker/volumes:/var/lib/docker/volumes
-    networks:
-      - agent_network
+  # # Portainer 
+  # agent:
+  #   image: portainer/agent:${PORTAINER_AGENT_VERSION}
+  #   # hostname: ${HOSTNAME}
+  #   restart: unless-stopped
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - /var/lib/docker/volumes:/var/lib/docker/volumes
+  #   networks:
+  #     - agent_network
 
-  portainer:
-    image: portainer/portainer-ce:${PORTAINER_VERSION}
-    command: -H tcp://agent:9001 --tlsskipverify
-    restart: always
-    volumes:
-      - ${PORTAINER_CONFIG_PATH}:/data
-    networks:
-      - agent_network
-      - public
-    ports:
-      - ${PORTAINER_WEB_PORT}:9000
-      - 8000:8000
+  # portainer:
+  #   image: portainer/portainer-ce:${PORTAINER_VERSION}
+  #   command: -H tcp://agent:9001 --tlsskipverify
+  #   restart: always
+  #   volumes:
+  #     - ${PORTAINER_CONFIG_PATH}:/data
+  #   networks:
+  #     - agent_network
+  #     - public
+  #   ports:
+  #     - ${PORTAINER_WEB_PORT}:9000
+  #     - 8000:8000
 
   # Plex
   plex:
@@ -160,25 +160,25 @@ services:
     ports:
       - ${SONARR_WEB_PORT}:8989
 
-  jellyfin:
-    image: ghcr.io/linuxserver/jellyfin
-    container_name: jellyfin
-    hostname: ${HOSTNAME}
-    restart: unless-stopped
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/London
-      # - JELLYFIN_PublishedServerUrl=192.168.0.5 #optional
-    volumes:
-      - ${JELLYFIN_CONFIG_PATH}:/config
-      - ${MEDIA_PATH}:/data/
+  # jellyfin:
+  #   image: ghcr.io/linuxserver/jellyfin
+  #   container_name: jellyfin
+  #   hostname: ${HOSTNAME}
+  #   restart: unless-stopped
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=Europe/London
+  #     # - JELLYFIN_PublishedServerUrl=192.168.0.5 #optional
+  #   volumes:
+  #     - ${JELLYFIN_CONFIG_PATH}:/config
+  #     - ${MEDIA_PATH}:/data/
       
-    ports:
-      - ${JELLYFIN_WEB_PORT}:8096
-      # - 8920:8920 #optional
-      - 7359:7359/udp #optional
-      - 1900:1900/udp #optional
+  #   ports:
+  #     - ${JELLYFIN_WEB_PORT}:8096
+  #     # - 8920:8920 #optional
+  #     - 7359:7359/udp #optional
+  #     - 1900:1900/udp #optional
     
 
 networks:
