@@ -267,8 +267,10 @@ services:
       - "${PHOTOPRISM_STORAGE_PATH}:/photoprism/storage"          # *writable* storage folder for cache, database, and sidecar files (never remove)
       - "${PHOTOPRISM_ORIGINALS_PATH}:/photoprism/originals"      # original media files (photos and videos)
       - "${PHOTOPRISM_IMPORT_PATH}:/photoprism/import"            # *optional* base folder from which files can be imported to originals
-      - "${PHOTOPRISM_IMPORT_DEVICES_PATH}:/photoprism/import/devices"  
-      # - "${PHOTOPRISM_IMPORT_IMAGES_PATH}:/photoprism/import/images"  
+      - "${PHOTOPRISM_IMPORT_DEVICES_PATH}:/photoprism/import/devices"
+      - "${PHOTOPRISM_IMPORT_PERSONAL_PATH}:/photoprism/import/personal"
+      - "${PHOTOPRISM_IMPORT_IMAGES_PATH}:/photoprism/import/images"
+      - "${PHOTOPRISM_IMPORT_NSFW_PATH}:/photoprism/import/nsfw"
       
 networks:
   agent_network:
