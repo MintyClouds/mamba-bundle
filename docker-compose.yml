@@ -276,7 +276,7 @@ services:
     container_name: frigate
     privileged: true # this may not be necessary for all setups
     restart: unless-stopped
-    image: blakeblackshear/frigate:{FRIGATE_VERSION}
+    image: blakeblackshear/frigate:${FRIGATE_VERSION}
     shm_size: "96mb" # update for your cameras based on calculation above
     # devices:
     #   - /dev/bus/usb:/dev/bus/usb # passes the USB Coral, needs to be modified for other versions
@@ -291,7 +291,7 @@ services:
         tmpfs:
           size: 1000000000
     ports:
-      - "5000:5000"
+      - "${FRIGATE_WEB_PORT}:5000"
       - "1935:1935" # RTMP feeds
     environment:
       FRIGATE_RTSP_PASSWORD: "${FRIGATE_RTSP_PASSWORD}"
