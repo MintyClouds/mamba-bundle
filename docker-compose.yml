@@ -271,7 +271,31 @@ services:
       - "${PHOTOPRISM_IMPORT_PERSONAL_PATH}:/photoprism/import/personal"
       - "${PHOTOPRISM_IMPORT_IMAGES_PATH}:/photoprism/import/images"
       - "${PHOTOPRISM_IMPORT_NSFW_PATH}:/photoprism/import/nsfw"
-      
+
+  frigate:
+    container_name: frigate
+    privileged: true # this may not be necessary for all setups
+    restart: unless-stopped
+    image: blakeblackshear/frigate:{FRIGATE_VERSION}
+    shm_size: "96mb" # update for your cameras based on calculation above
+    # devices:
+    #   - /dev/bus/usb:/dev/bus/usb # passes the USB Coral, needs to be modified for other versions
+    #   - /dev/apex_0:/dev/apex_0 # passes a PCIe Coral, follow driver instructions here https://coral.ai/docs/m2/get-started/#2a-on-linux
+    #   - /dev/dri/renderD128 # for intel hwaccel, needs to be updated for your hardware
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${FRIGATE_CONFIG_FILE}:/config/config.yml:ro
+      - ${FRIGATE_STORAGE_PATH}:/media/frigate
+      - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000
+    ports:
+      - "5000:5000"
+      - "1935:1935" # RTMP feeds
+    environment:
+      FRIGATE_RTSP_PASSWORD: "${FRIGATE_RTSP_PASSWORD}"
+
 networks:
   agent_network:
   public:
