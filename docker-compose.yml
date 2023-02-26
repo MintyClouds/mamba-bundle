@@ -256,6 +256,7 @@ services:
       dockerfile: dockerfiles/nextcloud.Dockerfile
     restart: unless-stopped
     user: "${NEXTCLOUD_UID_GID}:${NEXTCLOUD_UID_GID}"
+    runtime: nvidia
     ports:
       - ${NEXTCLOUD_PORT}:80
     depends_on:
