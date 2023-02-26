@@ -39,7 +39,7 @@ RUN      buildDeps="build-essential \
                     libc6 \
                     libc6-dev \
                     unzip \
-                    libnuma \
+                    libnuma1 \
                     libnuma-dev \
                     bzip2 \
                     libexpat1-dev \
