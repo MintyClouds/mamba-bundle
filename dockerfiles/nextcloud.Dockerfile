@@ -627,6 +627,11 @@ COPY --from=build /usr/local/share /usr/local/share/
 COPY --from=build /usr/local/lib /usr/local/lib/
 COPY --from=build /usr/local/include /usr/local/include/
 COPY --from=build /usr/local/src/cuda-11.4/lib64/ /usr/local/lib64/
+
+RUN     apt-get -yqq update && \
+        apt-get install -yq cuda && \
+        apt-get autoremove -y && \
+        apt-get clean -y
 #COPY ./lib/ /usr/local/lib
 
 # Let's make sure the app built correctly
