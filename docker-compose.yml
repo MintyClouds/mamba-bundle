@@ -275,6 +275,7 @@ services:
       - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_DOMAIN}
       - TRUSTED_PROXIES=172.18.0.0/16
       - PHP_MEMORY_LIMIT=1024M
+      - NVIDIA_VISIBLE_DEVICES=all
     volumes:
       - "./redis-session.ini:/usr/local/etc/php/conf.d/redis-session.ini"
       - "./memories-main.js:/var/www/html/custom_apps/memories/js/memories-main.js:ro"

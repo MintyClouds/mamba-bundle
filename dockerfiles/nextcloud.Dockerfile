@@ -579,6 +579,7 @@ RUN  \
         --enable-libzmq \
         --enable-nonfree \
         --enable-nvenc \
+        --enable-cuda-nvcc \
         --enable-openssl \
         --enable-postproc \
         --enable-shared \
@@ -628,10 +629,21 @@ COPY --from=build /usr/local/lib /usr/local/lib/
 COPY --from=build /usr/local/include /usr/local/include/
 COPY --from=build /usr/local/src/cuda-11.4/lib64/ /usr/local/lib64/
 
-RUN     apt-get -yqq update && \
-        apt-get install -yq cuda && \
-        apt-get autoremove -y && \
-        apt-get clean -y
+# RUN     apt-get install -yq software-properties-common
+# RUN     add-apt-repository contrib
+# RUN     apt-get -yqq update && \
+#         apt-get install -yq wget
+#
+# RUN     wget -P /tmp/ https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/cuda-keyring_1.0-1_all.deb
+# RUN     dpkg -i /tmp/cuda-keyring_1.0-1_all.deb
+# RUN     echo "deb [signed-by=/usr/share/keyrings/cuda-archive-keyring.gpg] https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/ /" | tee /etc/apt/sources.list.d/cuda-debian11-x86_64.list                                                                          
+#
+# RUN     apt-get -yqq update && \
+#         apt-get install -yq cuda
+#
+# RUN     apt-get autoremove -y && \
+#         apt-get clean -y
+# RUN     rm -rf /usr/bin/nvidia*
 #COPY ./lib/ /usr/local/lib
 
 # Let's make sure the app built correctly
