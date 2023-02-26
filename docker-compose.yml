@@ -52,41 +52,87 @@ services:
     volumes:
       - ${PLEX_CONFIG_PATH}:/config
       - ${MEDIA_PATH}:/storage
+      - ${GALLERY_PATH}:/gallery
     runtime: nvidia
 
-  # Deluge
-  arch-delugevpn:
-    image: binhex/arch-delugevpn:${ARCH_DELUGEVPN_VERSION}
-    container_name: arch-delugevpn
+  qbittorrent:
+    image: dyonr/qbittorrentvpn:${QBITTORRENT_VERSION}
+    container_name: qbittorrent
     hostname: ${HOSTNAME}
     restart: unless-stopped
-    ports:
-        - '${ARCH_DELUGEVPN_WEB_PORT}:8112'
-          # - '8118:8118'
-        - '58846:58846'
-        - '58946:58946'
-    volumes:
-        - ${ARCH_DELUGEVPN_CONFIG_PATH}:/config
-        - ${MEDIA_PATH}:/data
-        - /etc/localtime:/etc/localtime:ro
-    cap_add:
-        - NET_ADMIN
+    ports: 
+        - '${QBITTORRENT_WEB_PORT}:8080'
+    privileged: true
+    sysctls:
+        - net.ipv4.conf.all.src_valid_mark=1
+        - net.ipv6.conf.all.disable_ipv6=0
     environment:
-        - VPN_ENABLED=yes
-        - VPN_PASS=${ARCH_DELUGEVPN_PASSWORD}
-        - VPN_PROV=custom
-        - VPN_CLIENT=openvpn
-        - STRICT_PORT_FORWARD=yes
-        - ENABLE_PRIVOXY=yes
+        - VPN_ENABLED=no
+        - VPN_TYPE=openvpn
         - LAN_NETWORK=192.168.1.0/24
-        - NAME_SERVERS=209.222.18.222,84.200.69.80,37.235.1.174,1.1.1.1,209.222.18.218,37.235.1.177,84.200.70.40,1.0.0.1
-        - DELUGE_DAEMON_LOG_LEVEL=info
-        - DELUGE_WEB_LOG_LEVEL=info
-        - ADDITIONAL_PORTS=<port
-        - DEBUG=<true|false>
-        - UMASK=022
         - PUID=1000
         - PGID=1000
+          # - NAME_SERVERS=10.14.88.1
+          # - RESTART_CONTAINER=no
+    volumes:
+        - ${QBITTORRENT_CONFIG_PATH}:/config
+        - ${MEDIA_PATH}:/data
+
+  qbittorrent-vpn:
+    image: dyonr/qbittorrentvpn:${QBITTORRENT_VERSION}
+    container_name: qbittorrent-vpn
+    hostname: ${HOSTNAME}
+    restart: unless-stopped
+    ports: 
+        - '${QBITTORRENT_VPN_WEB_PORT}:8080'
+    privileged: true
+    sysctls:
+        - net.ipv4.conf.all.src_valid_mark=1
+        - net.ipv6.conf.all.disable_ipv6=0
+    environment:
+        - VPN_ENABLED=yes
+        - VPN_TYPE=wireguard
+        - LAN_NETWORK=192.168.1.0/24
+        - PUID=1000
+        - PGID=1000
+          # - NAME_SERVERS=10.14.88.1
+          # - RESTART_CONTAINER=no
+    volumes:
+        - ${QBITTORRENT_VPN_CONFIG_PATH}:/config
+        - ${MEDIA_PATH}:/data
+
+
+  # # Deluge
+  # arch-delugevpn:
+  #   image: binhex/arch-delugevpn:${ARCH_DELUGEVPN_VERSION}
+  #   container_name: arch-delugevpn
+  #   hostname: ${HOSTNAME}
+  #   restart: unless-stopped
+  #   ports:
+  #       - '${ARCH_DELUGEVPN_WEB_PORT}:8112'
+  #         # - '8118:8118'
+  #       - '58846:58846'
+  #       - '58946:58946'
+  #   volumes:
+  #       - ${ARCH_DELUGEVPN_CONFIG_PATH}:/config
+  #       - ${MEDIA_PATH}:/data
+  #       - /etc/localtime:/etc/localtime:ro
+  #   cap_add:
+  #       - NET_ADMIN
+  #   environment:
+  #       - VPN_ENABLED=yes
+  #       - VPN_PASS=${ARCH_DELUGEVPN_PASSWORD}
+  #       - VPN_PROV=custom
+  #       - VPN_CLIENT=openvpn
+  #       - STRICT_PORT_FORWARD=yes
+  #       - ENABLE_PRIVOXY=yes
+  #       - LAN_NETWORK=192.168.1.0/24
+  #       - NAME_SERVERS=209.222.18.222,84.200.69.80,37.235.1.174,1.1.1.1,209.222.18.218,37.235.1.177,84.200.70.40,1.0.0.1
+  #       - DELUGE_DAEMON_LOG_LEVEL=info
+  #       - DELUGE_WEB_LOG_LEVEL=info
+  #       - UMASK=022
+  #       - PUID=1000
+  #       - PGID=1000
 
   nginx-fileserver:
     image: nginx:${NGINX_VERSION}
@@ -161,6 +207,26 @@ services:
       - ${MEDIA_PATH}:/data
     ports:
       - ${SONARR_WEB_PORT}:8989
+
+  digikam-mariadb:
+    ## If MariaDB gets stuck in a restart loop, this points to a memory or filesystem issue:
+    ## https://docs.photoprism.app/getting-started/troubleshooting/#fatal-server-errors
+    restart: unless-stopped
+    image: mariadb:${DIGIKAM_MARIADB_VERSION}
+    security_opt:
+      - seccomp:unconfined
+      - apparmor:unconfined
+    command: mysqld --innodb-buffer-pool-size=128M --transaction-isolation=READ-COMMITTED --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max-connections=512 --innodb-rollback-on-timeout=OFF --innodb-lock-wait-timeout=120
+    ## Never store database files on an unreliable device such as a USB flash drive, an SD card, or a shared network folder:
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DIGIKAM_MARIADB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DIGIKAM_MARIADB_DB}
+      MYSQL_USER: ${DIGIKAM_MARIADB_USER}
+      MYSQL_PASSWORD: ${DIGIKAM_MARIADB_PASSWORD}
+    volumes:
+      - "${DIGIKAM_MARIADB_DATA_PATH}:/var/lib/mysql" # important, don't remove
+    ports:
+      - ${DIGIKAM_MARIADB_PORT}:3306
 
   # jellyfin:
   #   image: ghcr.io/linuxserver/jellyfin
