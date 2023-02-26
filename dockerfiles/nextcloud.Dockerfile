@@ -1,9 +1,3 @@
-FROM nextcloud:25.0.4-apache
-
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-ENV DEBIAN_FRONTEND=noninteractive
-
-
 # ffmpeg - http://ffmpeg.org/download.html
 #
 # From https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu
@@ -23,7 +17,7 @@ RUN     apt-get -yqq update && \
         apt-get autoremove -y && \
         apt-get clean -y
 
-FROM        nextcloud:25.0.3-apache AS runtime-base
+FROM        nextcloud:25.0.4-apache AS runtime-base
 
 ENV	    NVIDIA_DRIVER_CAPABILITIES compute,utility,video
 ENV	    DEBIAN_FRONTEND=nonintercative
