@@ -31,6 +31,7 @@ RUN     apt-get -yqq update && \
 
 FROM  devel-base as build
 
+ARG         PREFIX=/opt/ffmpeg
 RUN      buildDeps="build-essential \
                     automake \
                     cmake \
@@ -72,7 +73,7 @@ RUN \
 ## Download ffmpeg https://ffmpeg.org/
 RUN \
     DIR=/tmp/ffmpeg && \
-    git clone https://git.ffmpeg.org/ffmpeg.git ${DIR} 
+    git clone --branch release/5.1 https://git.ffmpeg.org/ffmpeg.git ${DIR} 
 
 
 ## Build ffmpeg https://ffmpeg.org/
@@ -89,22 +90,12 @@ RUN  \
         make -j 4 && \
         make install 
 
-RUN \
-        LD_LIBRARY_PATH="${PREFIX}/lib:${PREFIX}/lib64:${LD_LIBRARY_PATH}" ldd ${PREFIX}/bin/ffmpeg | grep opt/ffmpeg | cut -d ' ' -f 3 | xargs -i cp {} /usr/local/lib/ && \
-        for lib in /usr/local/lib/*.so.*; do ln -s "${lib##*/}" "${lib%%.so.*}".so; done && \
-        cp ${PREFIX}/bin/* /usr/local/bin/ && \
-        cp -r ${PREFIX}/share/* /usr/local/share/ && \
-        LD_LIBRARY_PATH=/usr/local/lib ffmpeg -buildconf && \
-        cp -r ${PREFIX}/include/libav* ${PREFIX}/include/libpostproc ${PREFIX}/include/libsw* /usr/local/include && \
-        mkdir -p /usr/local/lib/pkgconfig && \
-        for pc in ${PREFIX}/lib/pkgconfig/libav*.pc ${PREFIX}/lib/pkgconfig/libpostproc.pc ${PREFIX}/lib/pkgconfig/libsw*.pc; do \
-          sed "s:${PREFIX}:/usr/local:g; s:/lib64:/lib:g" <"$pc" >/usr/local/lib/pkgconfig/"${pc##*/}"; \
-        done
 RUN mkdir -p /usr/local/src/cuda-11.4/lib64 && find "/usr/local/cuda-11.4/lib64/" -depth -iname "*libnpp*.so.11" -exec cp {} /usr/local/src/cuda-11.4/lib64/ \;
     
 
 FROM        runtime-base AS release
-# ENV         LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64
+ENV         LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64
+
 
 WORKDIR     /var/www/html
 
@@ -113,6 +104,8 @@ COPY --from=build /usr/local/bin /usr/local/bin/
 COPY --from=build /usr/local/share /usr/local/share/
 COPY --from=build /usr/local/lib /usr/local/lib/
 COPY --from=build /usr/local/include /usr/local/include/
+COPY --from=build /usr/local/cuda/include/ /usr/local/cuda/include/
+COPY --from=build /usr/local/cuda/lib64/ /usr/local/cuda/lib64/
 
 # RUN     apt-get install -yq software-properties-common
 # RUN     add-apt-repository contrib
