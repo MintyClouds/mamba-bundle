@@ -88,13 +88,12 @@ RUN  \
         --enable-shared && \
         make -j 4 && \
         make install 
+
+RUN mkdir -p /usr/local/src/cuda-11.4/lib64 && find "/usr/local/cuda-11.4/lib64/" -depth -iname "*libnpp*.so.11" -exec cp {} /usr/local/src/cuda-11.4/lib64/ \;
     
 
 FROM        runtime-base AS release
-LABEL       org.opencontainers.image.authors="julien@rottenberg.info" \
-            org.opencontainers.image.source=https://github.com/jrottenberg/ffmpeg
-
-ENV         LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64
+# ENV         LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64
 
 WORKDIR     /var/www/html
 
