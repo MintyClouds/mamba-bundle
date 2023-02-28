@@ -12,3 +12,4 @@ nextcloud-scan-full: nextcloud-scan-files nextcloud-scan-preview nextcloud-scan-
 
 nextcloud-restart:
 	docker-compose stop nextcloud && docker-compose rm -f nextcloud && docker-compose up -d nextcloud 
+

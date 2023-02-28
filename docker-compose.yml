@@ -278,7 +278,7 @@ services:
       - NVIDIA_VISIBLE_DEVICES=all
     volumes:
       - "./redis-session.ini:/usr/local/etc/php/conf.d/redis-session.ini"
-      - "./memories-main.js:/var/www/html/custom_apps/memories/js/memories-main.js:ro"
+        # - "./memories-main.js:/var/www/html/custom_apps/memories/js/memories-main.js:ro"
       - "./memories_transcoder/:/var/www/memories_transcoder:ro"
       - ${NEXTCLOUD_CONFIG_PATH}:/var/www/html
       - ${NEXTCLOUD_TEMP_PATH}:/var/www/memories_tmp
